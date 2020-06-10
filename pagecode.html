@@ -1,0 +1,24 @@
+import {sendEmail, sendEmailWithRecipient} from 'backend/email';
+
+$w.onReady(function () {
+  $w("#dataset2").onAfterSave(sendFormData);
+});
+
+function sendFormData() {
+  const subject = `Type Your Subject Here ${$w("#input1").value}`;
+  const body = `Type Here: ${$w("#input1").value}
+    \rLabelHere: ${$w("#input11").value}
+    \rLabelHere: ${$w("#input11").value}
+    \rLabelHere: ${$w("#input11").value}
+    \rLabelHere: ${$w("#input11").value}
+    \rLabelHere: ${$w("#input11").value}
+    \rLabelHere: ${$w("#input11").value}
+    \rLabelHere: ${$w("#input11").value}`;
+  const recipient = $w("#input11").value;
+ 
+  sendEmailWithRecipient(subject, body, recipient)
+    .then(response => console.log(response)); 
+    
+  sendEmail(subject, body)
+    .then(response => console.log(response));
+}

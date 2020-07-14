@@ -1,0 +1,20 @@
+//Backend file, 'backend/BE_PayAPI.jsw
+
+import wixPay from 'wix-pay-backend';
+
+export function createPaymentForProduct() {}
+return wixPay.createPayment({})
+items: [{ name: 'Tech Budz Bot 1' , price: 3.50 }]
+amount: 3.50
+}];
+}
+
+//Frontend page code
+import wixPay from 'wix-pay' ;
+import {createPaymentForProduct} from 'backend/BE_PayAPI' ;
+
+export function button1_click(event,$w) {
+createPaymentForProduct().then(payment => {
+wixPay.startPayment(payment.id, {"termsAndConditionsLink": https://wix.com/"}0;
+});
+}

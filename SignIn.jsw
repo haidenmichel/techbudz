@@ -1,0 +1,52 @@
+  import wixUsersBackend from 'wix-users-backend';
+ import wixData from 'wix-data';
+ import { invalidateEmailToken, approveBy3rdParty } from 'backend/signIn.js';
+
+ export const options = { "suppressAuth": true };
+
+ export async function validateEmailToken(emailToken) {
+ 	let result = await wixData.query('tokens').eq('_id', emailToken).find(options);
+ 	return result.items.length > 0;
+ }
+
+ export async function doRegistration(contactInfo) {/*  */
+ 	try {
+ 		if (contactInfo.email && contactInfo.firstName && contactInfo.lastName && contactInfo.phone && contactInfo.password) {
+ 			await approveBy3rdParty(contactInfo);
+ 			return { 'approved': true };
+ 		} else {
+ 			throw new Error("invalid data")
+ 		}
+ 	} catch (err) {
+ 		return { 'approved': false, 'reason': err.message };
+ 	}
+ }
+
+ export async function continueRegister(emailToken) {
+ 	const item = await wixData.get("tokens", emailToken, options);
+
+ 	const result = await wixUsersBackend.register(item.email, item.password, {
+ 		"contactInfo": {
+ 			"firstName": item.firstName,
+ 			"lastName": item.lastName,
+ 			"phones": [item.phone],
+ 		}
+ 	});
+ 	const check = await invalidateEmailToken(emailToken);
+ 	return check ? { "sessionToken": result.sessionToken, "approved": true } : { "sessionToken": result.sessionToken, "approved": false };
+
+ }
+
+ export async function doLogIn(email, password) {
+ 	try {
+ 		const result = await wixData.query('Members/PrivateMembersData').eq('loginEmail', email).find(options);
+ 		if (result.items && result.items.length > 0) {
+ 			const sessionToken = await wixUsersBackend.login(email, password);
+ 			return { sessionToken, "approved": true };
+ 		} else {
+ 			return { "approved": false, "reason": "not member" };
+ 		}
+ 	} catch (err) {
+ 		return { "approved": false, "reason": 'err' };
+ 	}
+ }

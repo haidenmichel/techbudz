@@ -1,0 +1,15 @@
+import wixData from 'wix-data';
+import { sendEmail } from 'backend/email.jsw';
+
+export async function checkProductAvailability() {
+	const { items } = await wixData.query('stockWaitList').include('product').find();
+
+	items.forEach(async waitingItem => {
+		if (waitingItem.product.inStock) {
+			sendEmail(waitingItem.userEmail, waitingItem.product.name);
+			await wixData.remove('stockWaitList', waitingItem._id);
+		}
+	});
+}
+
+

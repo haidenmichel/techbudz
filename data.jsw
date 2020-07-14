@@ -1,0 +1,35 @@
+import wixData from 'wix-data';
+
+export async function addFile(obj) {
+	try {
+		const result = await wixData.query('members_tasks').eq('loginEmail', obj.loginEmail).find({ "suppressAuth": true });
+		if (result.items && result.items.length > 0) {
+			const itemToUpdate = result.items[0];
+			itemToUpdate.file = obj.file;
+			await wixData.update('members_tasks', itemToUpdate, { "suppressAuth": true })
+		} else {
+			await wixData.insert('members_tasks', obj, { "suppressAuth": true })
+		}
+		return { insert: true };
+	} catch (err) {
+		return { insert: false };
+	}
+}
+
+export async function getAllMembers() {
+	try {
+		let tableArray = [];
+		const result = await wixData.query('Members/PrivateMembersData').find({ "suppressAuth": true })
+		if (result.items && result.items.length > 0) {
+			result.items.forEach(obj => {
+				const { loginEmail, firstName, lastName, picture } = obj;
+				tableArray.push({ loginEmail, firstName, lastName, picture });
+			})
+			return tableArray;
+		} else {
+			throw new Error('No items in members collection')
+		}
+	} catch (err) {
+		console.log(err.message);
+	}
+}

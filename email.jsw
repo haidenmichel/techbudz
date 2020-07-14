@@ -1,0 +1,11 @@
+//email.jsw
+
+import {sendWithService} from 'backend/sendGrid';
+
+export function sendEmail(subject, body) {
+  const key = "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
+";
+  const sender = "admin@techbudz.me";
+  const recipient = "haidenmichel09@gmail.com";
+  return sendWithService(key, sender, recipient, subject, body);
+}

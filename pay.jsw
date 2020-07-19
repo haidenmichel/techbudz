@@ -1,0 +1,37 @@
+/**************************
+ * backend code - pay.jsw *
+ **************************/
+
+import wixPayBackend from 'wix-pay-backend';
+
+export function createMyPayment(userInfo) {
+  return wixPayBackend.createPayment({
+    items: [{
+      name: "Product Name",
+      price: 9.99,
+      quantity: 2
+    }],
+    amount: 19.98,
+    userInfo
+  } );
+}
+
+/********************
+ * client-side code *
+ ********************/
+
+import {createMyPayment} from 'backend/pay';
+import wixPay from 'wix-pay';
+
+export function myButton_click(event, $w) {
+  const firstName = // the user's first name
+  const lastName = // the user's last name
+  const phone = // the user's phone number
+  const email = // the user's email address
+  const countryCode = // the user's country code
+
+  createMyPayment( { firstName, lastName, phone, email, countryCode } )
+    .then( (payment) => {
+      wixPay.startPayment(payment.id);
+    } );
+}
